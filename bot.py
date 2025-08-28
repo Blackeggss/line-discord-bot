@@ -33,8 +33,9 @@ line_targets = set()  # 1:1, グループ, ルームのIDをすべて格納
 # ===== LINE → Discord =====
 @app.route("/callback", methods=['POST'])
 def callback():
-    signature = request.headers['X-Line-Signature']
+    signature = request.headers.get('X-Line-Signature')
     body = request.get_data(as_text=True)
+    print("LINE callback received")  # デバッグ用
 
     try:
         handler.handle(body, signature)
@@ -42,7 +43,6 @@ def callback():
         abort(400)
 
     return 'OK'
-
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
@@ -97,7 +97,8 @@ async def on_message(message):
 
 # ===== 並列実行 (Flask + Discord) =====
 def run_flask():
-    app.run(host="0.0.0.0", port=5000)
+    port = int(os.environ.get("PORT", 5000))  # RenderのPORTを使用
+    app.run(host="0.0.0.0", port=port)
 
 if __name__ == "__main__":
     threading.Thread(target=run_flask).start()
