@@ -73,12 +73,10 @@ def handle_message(event):
     # Discordに送信
     channel = bot.get_channel(DISCORD_CHANNEL_ID)
     if channel:
-        bot.loop.create_task(
-            channel.send(f"📲 LINE({display_name}): {event.message.text}")
+        asyncio.run_coroutine_threadsafe(
+            channel.send(f"📲 LINE({display_name}): {event.message.text}"),
+            bot.loop
         )
-    else:
-        print("Discord channel not found")
-
 
 # ===== Discord → LINE =====
 @bot.event
