@@ -7,6 +7,8 @@ from flask import Flask, request, abort
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
+from dotenv import load_dotenv
+load_dotenv()
 
 # ===== 環境変数 =====
 DISCORD_TOKEN = os.environ.get("DISCORD_TOKEN")
@@ -23,6 +25,11 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 # ===== LINE Bot 設定 =====
 line_bot_api = LineBotApi(LINE_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(LINE_CHANNEL_SECRET)
+
+@bot.event
+async def on_ready():
+    print(f"✅ Logged in as {bot.user} (ID: {bot.user.id})")
+    await bot.change_presence(activity=discord.Game(name="LINE ↔ Discord Bot"))
 
 # ===== Flask サーバー =====
 app = Flask(__name__)
